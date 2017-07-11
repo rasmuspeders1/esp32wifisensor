@@ -1,0 +1,9 @@
+[submodule "components/arduino"]
+	path = components/arduino
+	url = git@github.com:espressif/arduino-esp32.git
+[submodule "components/arduino_libs/Adafruit_Sensor"]
+	path = components/arduino_libs/Adafruit_Sensor
+	url = git@github.com:adafruit/Adafruit_Sensor.git
+[submodule "components/arduino_libs/DHT-sensor-library"]
+	path = components/arduino_libs/DHT-sensor-library
+	url = git@github.com:adafruit/DHT-sensor-library.git
