@@ -7,3 +7,6 @@
 [submodule "components/arduino_libs/DHT-sensor-library"]
 	path = components/arduino_libs/DHT-sensor-library
 	url = git@github.com:adafruit/DHT-sensor-library.git
+[submodule "components/esp-request"]
+	path = components/esp-request
+	url = git@github.com:tuanpmt/esp-request.git
