@@ -11,4 +11,10 @@ config WIFI_PASSWORD
     default "mypassword"
     help
 	WiFi password (WPA or WPA2) for the example to use.
+
+config LOCATION_TAG
+    string "Location Tag"
+    default ""
+    help
+	Location Tag to tag measurement data with. E.g. "living room".
 endmenu

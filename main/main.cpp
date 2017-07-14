@@ -25,6 +25,7 @@ static const char *TAG = "REQAPP";
 //set with make menuconfig
 #define DEFAULT_SSID CONFIG_WIFI_SSID
 #define DEFAULT_PWD CONFIG_WIFI_PASSWORD
+#define LOCATION_TAG CONFIG_LOCATION_TAG
 
 #define DHTPIN 4        // what digital pin we're connected to
 #define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
@@ -75,23 +76,6 @@ static void initialise_wifi(void)
     
 }
 
-void http_request_task(void *data)
-{
-    request_t *req;
-    int status;
-    xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
-    ESP_LOGI(TAG, "Connected to AP, freemem=%d",esp_get_free_heap_size());
-    // vTaskDelay(1000/portTICK_RATE_MS);
-    req = req_new("http://rpi.odin:8086/write?db=temptest");
-    char post[] = "POST";
-    req_setopt(req, REQ_SET_METHOD, post);
-    req_setopt(req, REQ_SET_POSTFIELDS, data);
-    status = req_perform(req);
-    req_clean(req);
-    ESP_LOGI(TAG, "Finish request, status=%d, freemem=%d", status, esp_get_free_heap_size());
-    vTaskDelete(NULL);
-}
-
 extern "C" void app_main(void)
 {
     nvs_flash_init();
@@ -114,10 +98,23 @@ extern "C" void app_main(void)
             printf("Temperature %g °C\n", temperature);
             printf("humidity %g %%\n", humidity);
         }
-        sprintf(data, "temperature value=%f\nhumidity value=%f",temperature, humidity);
-        xTaskCreate(&http_request_task, "request_task", 8192, data, 5, NULL);
+        sprintf(data, "environment,location=%s temperature=%g,humidity=%g", LOCATION_TAG, temperature, humidity);
+        request_t *req;
+        int status;
+        xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
+        ESP_LOGI(TAG, "Connected to AP, freemem=%d",esp_get_free_heap_size());
+        // vTaskDelay(1000/portTICK_RATE_MS);
+        req = req_new("http://rpi.odin:8086/write?db=temptest");
+        char post[] = "POST";
+        req_setopt(req, REQ_SET_METHOD, post);
+        req_setopt(req, REQ_SET_POSTFIELDS, data);
+        status = req_perform(req);
+        req_clean(req);
+        ESP_LOGI(TAG, "Finish request, status=%d, freemem=%d", status, esp_get_free_heap_size());
 
-        vTaskDelay(3000 / portTICK_PERIOD_MS);
+        esp_deep_sleep_enable_timer_wakeup(1000*1000*60);
+        esp_deep_sleep_start();
+        //vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
     
 }
