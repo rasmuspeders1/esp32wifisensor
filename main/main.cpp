@@ -11,7 +11,7 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "driver/gpio.h"
-
+#include "esp_sleep.h"
 #include "Arduino.h"
 #include "DHT.h"
 extern "C" {
@@ -112,7 +112,7 @@ extern "C" void app_main(void)
         req_clean(req);
         ESP_LOGI(TAG, "Finish request, status=%d, freemem=%d", status, esp_get_free_heap_size());
 
-        esp_deep_sleep_enable_timer_wakeup(1000*1000*60);
+        esp_sleep_enable_timer_wakeup(1000*1000*60);
         esp_deep_sleep_start();
         //vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
